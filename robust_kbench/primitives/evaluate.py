@@ -48,6 +48,7 @@ def eval_torch_runtime(
     )
     graceful_eval_cleanup()
     end_time = time.time()
+    print(OP_TYPE)
     print(
         f"EVALUATE -  DONE - {OP_TYPE} => Torch native - Avg. Runtime: {torch_native_results['summary']['avg_mean_time']:.2f}s - Time: {end_time - start_time:.2f}s"
     )

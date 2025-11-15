@@ -39,12 +39,15 @@ def torch_eval_single(
     def model_fn(*inputs_t):
         return model(*inputs_t, fn=torch_fn_)
 
+    print("GOT HERERE?")
     time = eval_runtime_fn(
         model_fn,
         *inputs,
         warmup_time=warmup_time,
         n_iter=repetition_time,
     )
+    print(f"time is : {time}")
+    print("Maybe its a problem with post check?")
     del model, torch_fn, torch_fn_
     return time
 
@@ -60,8 +63,9 @@ def torch_eval(
     Evaluate the torch runtime for all input and init settings.
     """
     # Get device info for torch eval
+    print(f"Trying to get cuda_gpu_info")
     device_info = get_cuda_gpu_info()
-
+    print(f"Device info: {device_info}")
     # Get all considered input & module initialization settings
     input_settings = task.get_input_settings()
     init_settings = task.get_init_settings()
@@ -79,6 +83,8 @@ def torch_eval(
         input_setting = input_settings[i]
         init_setting = init_settings[i]
         # Loop over all input settings
+        print(f"torch eval single task = {task}")
+        
         result_runtime = torch_eval_single(
             task,
             eval_runtime_fn,
@@ -88,6 +94,8 @@ def torch_eval(
             warmup_time,
             repetition_time,
         )
+        print(f"Result completed? = {result_runtime}")
+
         graceful_eval_cleanup()
         # create a string from the input setting dict
         setting_results[config_str] = result_runtime.to_dict()
@@ -160,6 +168,7 @@ if __name__ == "__main__":
 
     if args.torch_native:
         try:
+            
             torch_results = torch_eval(
                 task,
                 eval_runtime_fn,
@@ -180,6 +189,7 @@ if __name__ == "__main__":
 
     if args.torch_compile:
         try:
+            print(f"Trying to eval torch_compile with the task: {task}, \n\t eval_runtime_fn = {eval_runtime_fn}")
             torch_compile_results = torch_eval(
                 task,
                 eval_runtime_fn,

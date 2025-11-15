@@ -342,13 +342,16 @@ def query(
     Returns:
         Tuple[str, List]: The response from the LLM and the message history.
     """
+
+    print(f"Running query: printing model_names -> {model_names}")
     # sample a model from the list
     if isinstance(model_names, list):
         model_name = random.choice(model_names)
     else:
         model_name = model_names
     client, model = get_client_llm(model_name)
-
+    print(f"client is : {client}")
+    print(f"model is : {model}")
     # perform temperature sampling if provided
     if isinstance(temperatures, list):
         # o1 only allows temp = 1.0

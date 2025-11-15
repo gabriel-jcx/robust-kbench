@@ -132,6 +132,8 @@ def torch_eval(
         cmd.extend(["--torch_native"])
 
     try:
+        print(f"Trying to run command: {cmd}\n")
+        debug = True
         exec_command(
             cmd=cmd,
             os_env=os_env,
@@ -157,6 +159,7 @@ def torch_eval(
         return None
 
     with open(results_path, "r") as f:
+        print(results_path)
         results = json.load(f)
     return results
 
@@ -181,6 +184,7 @@ def cuda_compile(
         "--store_results",
     ]
     try:
+
         exec_command(
             cmd=cmd,
             os_env=os_env,
