@@ -22,6 +22,9 @@ def forward_fn(
     Returns:
         torch.Tensor: Output tensor with Layer Normalization applied, same shape as input.
     """
+    assert x.is_cuda, f"x is on {x.device}"
+    assert weight.is_cuda, f"weight is on {weight.device}"
+    assert bias.is_cuda, f"bias is on {bias.device}"
     # Get the normalized shape from the weight tensor
     normalized_shape = tuple(x.shape[-len(weight.shape) :])
     return F.layer_norm(
@@ -41,6 +44,7 @@ class Model(nn.Module):
         dim2: int,
         eps: float = 1e-5,
         init_method: str = "standard",
+        device: str = "cuda",
     ):
         """
         Initializes the LayerNorm layer parameters.
@@ -53,11 +57,11 @@ class Model(nn.Module):
         self.eps = eps
 
         if init_method == "standard":
-            weight = torch.ones(self.normalized_shape)
-            bias = torch.zeros(self.normalized_shape)
+            weight = torch.ones(self.normalized_shape,device = device)
+            bias = torch.zeros(self.normalized_shape,device = device)
         elif init_method == "random":
-            weight = torch.randn(self.normalized_shape)
-            bias = torch.randn(self.normalized_shape)
+            weight = torch.randn(self.normalized_shape,device = device)
+            bias = torch.randn(self.normalized_shape,device = device)
 
         self.weight = nn.Parameter(weight)
         self.bias = nn.Parameter(bias)
@@ -73,6 +77,13 @@ class Model(nn.Module):
         Returns:
             torch.Tensor: Output tensor with Layer Normalization applied, same shape as input.
         """
+
+        # assert x.is_cuda, f"x is on {x.device}"
+        # assert self.weight.is_cuda, f"weight is on {self.weight.device}"
+        # assert self.bias.is_cuda, f"bias is on {self.bias.device}"
+        if fn is None:
+            fn = forward_fn
+
         return fn(x, self.weight, self.bias, self.eps)
 
 

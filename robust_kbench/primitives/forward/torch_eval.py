@@ -34,10 +34,12 @@ def torch_eval_single(
     inputs = easy_to_device(inputs, "cuda")
     model = task.model(**init_setting).to("cuda")
     torch_fn = task.forward_fn
-    torch_fn_ = torch.compile(torch_fn, mode="max-autotune") if compile else torch_fn
+    # torch_fn = torch_fn.cuda()
+    
+    torch_fn_ = torch.compile(model, mode="max-autotune") if compile else torch_fn
 
     def model_fn(*inputs_t):
-        return model(*inputs_t, fn=torch_fn_)
+        return model(*inputs_t)
 
     print("GOT HERERE?")
     time = eval_runtime_fn(
@@ -189,7 +191,7 @@ if __name__ == "__main__":
 
     if args.torch_compile:
         try:
-            print(f"Trying to eval torch_compile with the task: {task}, \n\t eval_runtime_fn = {eval_runtime_fn}")
+            # print(f"Trying to eval torch_compile with the task: {task}, \n\t eval_runtime_fn = {eval_runtime_fn}")
             torch_compile_results = torch_eval(
                 task,
                 eval_runtime_fn,

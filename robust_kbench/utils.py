@@ -15,6 +15,7 @@ def graceful_eval_cleanup(device: str = "cuda"):
 
 def easy_to_device(pytree: Any, device: torch.device):
     """Move all tensors in the pytree to the given device."""
+    print(device)
     return tree_map(
         lambda x: x.to(device) if isinstance(x, torch.Tensor) else x, pytree
     )

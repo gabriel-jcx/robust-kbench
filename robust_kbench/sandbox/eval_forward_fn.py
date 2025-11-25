@@ -3,6 +3,10 @@ import numpy as np
 import torch.utils.benchmark as TBenchmark
 from triton import testing
 from robust_kbench.sandbox.results import TimeEvalResult
+import torch
+def info(x, name="x"):
+    print(name, x.device, "is_cuda=", x.is_cuda, "contig=", x.is_contiguous(), "dtype=", x.dtype)
+
 
 
 def time_function_kernel_bench(
@@ -13,11 +17,27 @@ def time_function_kernel_bench(
     kernel_name: str | None = None,
 ) -> TimeEvalResult:
     """Time a function using Cuda events."""
+
+    # example: print all tensors you're passing to the kernel/op
+    # info(a,"a"); info(b,"b"); info(out,"out")
+    # print("cuda_available:", torch.cuda.is_available())
+    # if torch.cuda.is_available():
+    #     print("device:", torch.cuda.get_device_name(0))
+
+    # # NEW: inspect all args
+    # for i, a in enumerate(args):
+    #     if isinstance(a, torch.Tensor):
+    #         print(f"[time_fn] arg {i}: device={a.device}, shape={a.shape}, dtype={a.dtype}")
+    #     elif isinstance(a, (list, tuple)):
+    #         print(f"[time_fn] arg {i} is {type(a)} of length {len(a)}")
+    #         for j, b in enumerate(a):
+    #             if isinstance(b, torch.Tensor):
+    #                 print(f"  [time_fn] arg {i}[{j}]: device={b.device}, shape={b.shape}, dtype={b.dtype}")
+
     # Warmup trials
     for _ in range(warmup_time):
         func(*args)
         torch.cuda.synchronize(device="cuda")
-
     elapsed_times = []
 
     # Runtime evaluation trials
